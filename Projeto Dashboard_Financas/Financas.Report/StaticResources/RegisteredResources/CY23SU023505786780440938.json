@@ -1,0 +1,26 @@
+{
+  "name": "CY23SU02",
+  "dataColors": [
+    "#25E2FF",
+    "#7166F9",
+    "#E17CFD",
+    "#4CAFED",
+    "#95A5EB",
+    "#5919A7",
+    "#06B2EB",
+    "#F41440"
+  ],
+  "foreground": "#131312",
+  "background": "#FFFFFF",
+  "foregroundNeutralSecondary": "#6C6966",
+  "backgroundLight": "#E5E0DA",
+  "foregroundNeutralTertiary": "#ABA7A2",
+  "backgroundNeutral": "#C6C2BE",
+  "tableAccent": "#118DFF",
+  "maximum": "#4A2D75",
+  "center": "#1AAB40",
+  "minimum": "#E645AB",
+  "bad": "#E66C37",
+  "neutral": "#F2A73F",
+  "good": "#61B902"
+}

@@ -1,0 +1,10 @@
+relationship 040b6821-bff2-4db8-8f89-c7eea1b92048
+	joinOnDateBehavior: datePartOnly
+	fromColumn: Dataset.Data
+	toColumn: LocalDateTable_a39cddd2-f388-45e2-9350-7174d5739506.Date
+
+relationship dd21c4ce-2ea6-475c-bf08-9bcbc249a4d1
+	joinOnDateBehavior: datePartOnly
+	fromColumn: Data_Selecionada.Data
+	toColumn: LocalDateTable_6a12a3e0-c51d-4537-8943-530e6bce4cd6.Date
+

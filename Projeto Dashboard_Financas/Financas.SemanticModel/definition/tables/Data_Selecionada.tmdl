@@ -1,0 +1,39 @@
+table Data_Selecionada
+	lineageTag: 43e83cea-9cc4-4356-b6ac-8d43ec8e58a8
+
+	column Data
+		formatString: General Date
+		lineageTag: d4399176-0897-49d3-9b88-c404e8aac239
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: Dataset[Data]
+
+		variation Variation
+			isDefault
+			relationship: dd21c4ce-2ea6-475c-bf08-9bcbc249a4d1
+			defaultHierarchy: LocalDateTable_6a12a3e0-c51d-4537-8943-530e6bce4cd6.'Hierarquia de datas'
+
+		annotation SummarizationSetBy = Automatic
+
+	column MesAno
+		lineageTag: 610ab4a5-f2bb-4591-b454-7ce9f4a49ae1
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: Dataset[MesAno]
+
+		annotation SummarizationSetBy = Automatic
+
+	column Ano
+		lineageTag: d550f720-1aeb-4d1d-beae-1343f2a8e2e5
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: Dataset[Ano]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Data_Selecionada = calculated
+		mode: import
+		source = SUMMARIZE('Dataset','Dataset'[Data],'Dataset'[MesAno],[Ano])
+
+	annotation PBI_Id = 4ba6882a545f4350acd3fe4b24b095c5
+

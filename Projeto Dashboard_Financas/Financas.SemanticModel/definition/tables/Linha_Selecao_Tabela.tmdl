@@ -1,0 +1,26 @@
+table Linha_Selecao_Tabela
+	lineageTag: a2f9e3a6-7754-4459-b3c5-7a5eac4b1338
+
+	column tipo
+		lineageTag: 022c0886-7273-4836-8ef8-6be0f0e61087
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [tipo]
+
+		annotation SummarizationSetBy = Automatic
+
+	column id
+		formatString: 0
+		lineageTag: 13f99ef9-bab9-4010-8d05-f4aa30c770d4
+		summarizeBy: sum
+		isNameInferred
+		sourceColumn: [id]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Linha_Selecao_Tabela = calculated
+		mode: import
+		source = DATATABLE("tipo", STRING,"id", INTEGER, {{"renda",1},{"poupança",2},{"despesa",3},{"meta",4}})
+
+	annotation PBI_Id = 9bb11a3c44c6412499d042a11ff16eca
+

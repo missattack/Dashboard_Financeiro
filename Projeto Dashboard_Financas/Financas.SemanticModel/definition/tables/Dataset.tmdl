@@ -1,0 +1,183 @@
+table Dataset
+	lineageTag: a6b6365d-a524-4d73-819c-f9a3b9bdfb69
+
+	measure 'Valor Total' = SUM('Dataset'[Valor])
+		formatString: "R$"\ #,0.00;-"R$"\ #,0.00;"R$"\ #,0.00
+		lineageTag: 88f89151-ecdd-406c-aa4c-d6464763a939
+
+		annotation PBI_FormatHint = {"currencyCulture":"pt-BR"}
+
+	measure Renda = CALCULATE([Valor Total], 'Dataset'[Tipo] = "renda")
+		formatString: 0
+		lineageTag: ff5b518b-3483-4933-92aa-1677e2e7b3ba
+
+	measure Poupanca = ```
+			CALCULATE([Valor Total], 'Dataset'[Tipo] = "poupança") 
+			```
+		formatString: 0
+		lineageTag: 24ace5b6-fab6-42ad-a9ef-6084680636aa
+
+	measure Despesa = CALCULATE([Valor Total],'Dataset'[Tipo]="despesa")
+		formatString: 0
+		lineageTag: b350a886-c67e-46fd-8668-d967029a0186
+
+	measure poupanca% = ```
+			DIVIDE([Poupanca],[Renda]) 
+			```
+		formatString: 0%;-0%;0%
+		lineageTag: 5c034553-dcf7-4b25-89cf-08b0cc03b457
+
+	measure RendaMesAnterior = CALCULATE([Renda],DATEADD('Dataset'[Data],-1,MONTH))
+		formatString: 0
+		lineageTag: e261d1a7-db72-4b2f-8637-ac2be9b1351d
+
+	measure MudancaRendaMesAtualxAnt% = DIVIDE([Renda],[RendaMesAnterior])
+		lineageTag: 5f07fa61-a565-47f0-aeec-d29c20b2040c
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure despesa% = ```
+			DIVIDE([Despesa],[Renda]) 
+			```
+		lineageTag: 3c2a88fb-7e5f-47b1-ad8d-49a932bfddde
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure meta = CALCULATE(SUM('Dataset'[Valor]),'Dataset'[Tipo]="meta")
+		formatString: 0%;-0%;0%
+		lineageTag: 66b803c2-e3f9-4999-bddc-8a7ee72cfcc1
+
+	measure Linha_Grafico_Medida = ```
+			var Valor_Selecionado = SELECTEDVALUE(Linha_Selecao_Tabela[id]) 
+			
+			RETURN SWITCH(Valor_Selecionado,1,[despesa%],2,[MudancaRendaMesAtualxAnt%],3,[poupanca%],4,[meta])
+			```
+		formatString: 0%;-0%;0%
+		lineageTag: d4ef5871-f74c-46da-9156-91525e76b096
+
+	measure 'Titulo Dinamico' = ```
+			SELECTEDVALUE(Linha_Selecao_Tabela[tipo])& " por data"  
+			```
+		lineageTag: a476cdd2-1fe8-4631-85ec-25c7c844b403
+
+	measure 'Venda Mensal' =
+			var CY_Mes_Selecionado = SELECTEDVALUE(Data_Selecionada[MesAno])
+			
+			RETURN
+			CALCULATE([Valor Total], 'Dataset'[MesAno] = CY_Mes_Selecionado)
+		formatString: 0
+		lineageTag: 8dc13b4d-149e-4274-b3df-dd6d9f6049eb
+
+	measure 'Anterior Mes Venda' = ```
+			var PY_Mes = PREVIOUSMONTH(Data_Selecionada[Data])
+			RETURN
+			CALCULATE([Valor Total],'Dataset'[Data]=PY_Mes)
+			
+			```
+		formatString: 0
+		lineageTag: e3bcd93f-351c-490f-a30d-ff8d40053ee9
+
+	measure 'Crescimento Mensal' = DIVIDE([Venda Mensal]-[Anterior Mes Venda],[Anterior Mes Venda])
+		formatString: 0.00%;-0.00%;0.00%
+		lineageTag: b69e88c0-e983-446d-af77-2d7b72635cf4
+
+	measure Despesa_Mensal_Cresc = ```
+			
+			 var val = CALCULATE([Crescimento Mensal], 'Dataset'[Tipo]="despesa")
+			 RETURN IF(val=BLANK(),0,val)
+			```
+		formatString: 0.00%;-0.00%;0.00%
+		lineageTag: 96ab24ae-f6d5-46d0-a013-432e4850ace4
+
+	measure Renda_Mensal_Cresc =
+			
+			var val = CALCULATE([Crescimento Mensal],'Dataset'[Tipo]="renda")
+			RETURN IF(val=BLANK(),0,val)
+		formatString: 0.00%;-0.00%;0.00%
+		lineageTag: cfb45438-d993-41c0-ada6-32c818ff2b73
+
+	measure Poupanca_Mensal_Cresc = ```
+			
+			    var val = CALCULATE([Crescimento Mensal], 'Dataset'[Tipo]="poupança")
+			RETURN IF(val=BLANK(),0,val)
+			```
+		formatString: 0.00%;-0.00%;0.00%
+		lineageTag: 574a7d1b-b1e1-4372-99a3-a09c65885dce
+
+	measure DespesaxPoupanca = DIVIDE([Poupanca],[Despesa])
+		formatString: 0.00%;-0.00%;0.00%
+		lineageTag: 3a742d3f-9dca-4fcf-9d22-59357e6d3de8
+
+	column Tipo
+		dataType: string
+		lineageTag: f018e78f-8ab8-422d-82cb-1ee9d5ca7b2a
+		summarizeBy: none
+		sourceColumn: Tipo
+
+		annotation SummarizationSetBy = Automatic
+
+	column Componente
+		dataType: string
+		lineageTag: 40bb2c4d-fc63-40e3-a1ed-72a35b9a9738
+		summarizeBy: none
+		sourceColumn: Componente
+
+		annotation SummarizationSetBy = Automatic
+
+	column Data
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 7a7e7301-ce7f-4c9b-bf92-8d45e3837472
+		summarizeBy: none
+		sourceColumn: Data
+
+		variation Variation
+			isDefault
+			relationship: 040b6821-bff2-4db8-8f89-c7eea1b92048
+			defaultHierarchy: LocalDateTable_a39cddd2-f388-45e2-9350-7174d5739506.'Hierarquia de datas'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column Valor
+		dataType: int64
+		formatString: 0
+		lineageTag: 8b61a1bd-dbc9-40ea-8fe8-0342d7fdc340
+		summarizeBy: sum
+		sourceColumn: Valor
+
+		annotation SummarizationSetBy = Automatic
+
+	column Ano = FORMAT('Dataset'[Data],"yyyy")
+		lineageTag: c2964cfb-5c47-4790-baf5-3581694c1aac
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column MesAno = FORMAT('Dataset'[Data],"mmm/yy")
+		lineageTag: 392c0303-bb91-497d-be11-639085a6565b
+		summarizeBy: none
+		sortByColumn: Ano
+
+		changedProperty = SortByColumn
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Dataset = m
+		mode: import
+		source =
+				let
+				    Fonte = Excel.Workbook(File.Contents("C:\POWER BI\Source\Finance Dataset.xlsx"), null, true),
+				    FinData_Sheet = Fonte{[Item="FinData",Kind="Sheet"]}[Data],
+				    #"Cabeçalhos Promovidos" = Table.PromoteHeaders(FinData_Sheet, [PromoteAllScalars=true]),
+				    #"Colunas Não Dinâmicas" = Table.UnpivotOtherColumns(#"Cabeçalhos Promovidos", {"Tipo", "Componente"}, "Atributo", "Valor"),
+				    #"Colunas Renomeadas" = Table.RenameColumns(#"Colunas Não Dinâmicas",{{"Atributo", "Data"}}),
+				    #"Tipo Alterado" = Table.TransformColumnTypes(#"Colunas Renomeadas",{{"Data", type date}, {"Valor", Int64.Type}})
+				in
+				    #"Tipo Alterado"
+
+	annotation PBI_NavigationStepName = Navegação
+
+	annotation PBI_ResultType = Table
+
